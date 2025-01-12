@@ -6,27 +6,9 @@ import os
 import json
 from pydantic_settings import BaseSettings
 from pathlib import Path
+from settings import RemarkableSettings
 
 load_dotenv()
-
-
-class RemarkableSettings(BaseSettings):
-    remarkable_ip: str
-    remarkable_wifi_ip: str
-    remarkable_password: str
-    remarkable_user: str
-    local_script_dir: Path
-    remote_base_dir: Path
-
-    class Config:
-        env_file = ".env"
-        env_file_encoding = "utf-8"
-
-        @classmethod
-        def parse_env_var(cls, field_name: str, raw_val: str) -> any:
-            if field_name in ["local_script_dir", "remote_base_dir"]:
-                return Path(os.path.expanduser(raw_val))
-            return raw_val
 
 
 class RemarkableInstaller:
@@ -36,7 +18,7 @@ class RemarkableInstaller:
 
         # Local paths
         self.config_file = os.path.join(
-            self.settings.local_script_dir, "remarkable_scripts_config.json"
+            self.settings.local_script_dir, self.settings.remarkable_script_config_json
         )
 
         # Laad de script configuratie
@@ -103,7 +85,9 @@ class RemarkableInstaller:
     def setup_gui(self):
         self.root = tk.Tk()
         self.root.title("reMarkable Script Installer")
-        self.root.geometry("500x600")
+        self.root.geometry(
+            f"{self.settings.window_width}x{self.settings.window_height}"
+        )
 
         # Main frame
         main_frame = ttk.Frame(self.root, padding="10")
@@ -112,26 +96,60 @@ class RemarkableInstaller:
         # Status label
         self.status_var = tk.StringVar(value="Gereed voor installatie")
         status_label = ttk.Label(main_frame, textvariable=self.status_var)
-        status_label.grid(row=0, column=0, columnspan=2, pady=5)
+        status_label.grid(
+            row=0, column=0, columnspan=3, pady=5
+        )  # Changed columnspan to 3
 
         # Progress bar
         self.progress = ttk.Progressbar(main_frame, length=300, mode="determinate")
-        self.progress.grid(row=1, column=0, columnspan=2, pady=5)
+        self.progress.grid(
+            row=1, column=0, columnspan=3, pady=5
+        )  # Changed columnspan to 3
+
+        # Button frame
+        button_frame = ttk.Frame(main_frame)
+        button_frame.grid(row=2, column=0, columnspan=3, pady=5)
 
         # Install button
         install_btn = ttk.Button(
-            main_frame, text="Installeer Scripts", command=self.start_installation
+            button_frame, text="Installeer Scripts", command=self.start_installation
         )
-        install_btn.grid(row=2, column=0, pady=5)
+        install_btn.grid(row=0, column=0, padx=5)
 
         # Reload config button
         reload_btn = ttk.Button(
-            main_frame, text="Herlaad Configuratie", command=self.reload_config
+            button_frame, text="Herlaad Configuratie", command=self.reload_config
         )
-        reload_btn.grid(row=2, column=1, pady=5)
+        reload_btn.grid(row=0, column=1, padx=5)
+
+        # Backup button
+        backup_btn = ttk.Button(
+            button_frame, text="Maak Backup", command=self.start_backup
+        )
+        backup_btn.grid(row=0, column=2, padx=5)
 
         # Script list
         self.create_script_list(main_frame)
+
+    def start_backup(self):
+        """Start het backup proces."""
+        try:
+            self.update_status("Backup wordt gemaakt...")
+            self.progress["value"] = 0
+
+            # Import the backup function
+            from client_side.backup_remarkable import create_backup
+
+            # Create the backup
+            create_backup()
+
+            self.progress["value"] = 100
+            self.update_status("Backup succesvol gemaakt!")
+            messagebox.showinfo("Succes", "Backup is succesvol gemaakt!")
+
+        except Exception as e:
+            self.update_status("Backup mislukt!")
+            messagebox.showerror("Fout", f"Backup maken mislukt: {str(e)}")
 
     def reload_config(self):
         """Herlaad de configuratie en update de GUI."""
