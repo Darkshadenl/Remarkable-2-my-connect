@@ -1,0 +1,23 @@
+{
+    "setup_dir-struct.py": {
+        "order": 2,
+        "local_path": "./Remarkable-side/setup-dir-struct.py",
+        "remote_path": "/home/root/remarkable_scripts/setup_dirs.py",
+        "execute": true,
+        "description": "Maakt de basis directory structuur. Installeer ook requirements.txt voor Remarkable."
+    },
+    "setup-remarkable.sh": {
+        "order": 1,
+        "local_path": "./Remarkable-side/setup-remarkable.sh",
+        "remote_path": "/home/root/setup-remarkable.sh",
+        "execute": true,
+        "description": "Letterlijke opzet van Entware, Pip en Flask."
+    },
+    "simple_server.py": {
+        "order": 3,
+        "local_path": "./Remarkable-side/webserver/simple_server.py",
+        "remote_path": "/home/root/remarkable_scripts/webserver/simple_server.py",
+        "execute": false,
+        "description": "Eenvoudige Flask webserver voor testen"
+    }
+}

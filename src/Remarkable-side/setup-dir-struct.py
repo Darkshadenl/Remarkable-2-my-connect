@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 
+
 import os
-import sys
+from pathlib import Path
+from pydantic_settings import BaseSettings
 
 def setup_directory_structure():
     base_dir = "/home/root/remarkable_scripts"
@@ -26,7 +28,8 @@ def setup_directory_structure():
 
     # Maak requirements.txt
     requirements = [
-        'flask',
+        'fastapi',
+        'uvicorn',
         'requests',
         'paramiko'
     ]
