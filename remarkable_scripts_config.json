@@ -1,0 +1,16 @@
+{
+    "setup_dirs.py": {
+        "order": 1,
+        "local_path": "setup_dirs.py",
+        "remote_path": "/home/root/remarkable_scripts/setup_dirs.py",
+        "execute": true,
+        "description": "Maakt de basis directory structuur"
+    },
+    "install_requirements.py": {
+        "order": 2,
+        "local_path": "requirements.txt",
+        "remote_path": "/home/root/remarkable_scripts/requirements.txt",
+        "execute": false,
+        "description": "Installeert benodigde Python packages"
+    }
+}
